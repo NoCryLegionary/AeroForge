@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AeroForge - Uçak İmalat Simülasyonu</title>
+    <meta name="description" content="Hayal ettiğin uçağı tasarla, en son teknolojileri araştır ve havacılık imparatorluğunu kur.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="start-overlay" id="startOverlay">
+        <h1 class="start-title">✈️ AEROFORGE</h1>
+        <p class="start-subtitle">
+            Hayal ettiğin uçağı tasarla, en son teknolojileri araştır ve havacılık imparatorluğunu kur. 
+            Aerodinamik, itki ve yapısal bütünlük arasındaki dengeyi bul.
+        </p>
+        <div class="company-input">
+            <label>Şirketinin Adı</label>
+            <input type="text" id="companyNameInput" placeholder="Örn: SkyTech Aviation" maxlength="20">
+        </div>
+        <button class="start-btn" data-action="start-game">İmparatorluğu Kur 🚀</button>
+    </div>
+
+    <div class="bg-animation"></div>
+    <div class="grid-overlay"></div>
+
+    <header class="header">
+        <div class="logo" id="companyDisplay">AEROFORGE</div>
+        <div class="company-stats">
+            <div class="stat-box">
+                <div class="stat-label">Bütçe</div>
+                <div class="stat-value" id="budget">$5M</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Prestij</div>
+                <div class="stat-value" id="prestige">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Üretim</div>
+                <div class="stat-value" id="production">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Araştırma</div>
+                <div class="stat-value" id="researchPoints">100</div>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <nav class="nav-panel">
+            <div class="nav-title">Merkez</div>
+            <button class="nav-btn active" data-action="show-section" data-section="research">
+                <span class="nav-icon">🔬</span> Araştırma
+            </button>
+            <button class="nav-btn" data-action="show-section" data-section="design">
+                <span class="nav-icon">✏️</span> Tasarım
+            </button>
+            <button class="nav-btn" data-action="show-section" data-section="production">
+                <span class="nav-icon">🏭</span> Üretim
+            </button>
+            <button class="nav-btn" data-action="show-section" data-section="testing">
+                <span class="nav-icon">🧪</span> Test
+            </button>
+            <button class="nav-btn" data-action="show-section" data-section="market">
+                <span class="nav-icon">💰</span> Pazar
+            </button>
+            <div class="nav-divider"></div>
+            <button class="nav-btn nav-save" data-action="save-game">
+                <span class="nav-icon">💾</span> Kaydet
+            </button>
+            <button class="nav-btn nav-danger" data-action="new-game">
+                <span class="nav-icon">🔄</span> Yeni Oyun
+            </button>
+        </nav>
+
+        <main class="content-area" id="mainContent">
+            <div id="research-section" class="section">
+                <h2 class="section-title">🔬 Teknoloji Araştırma</h2>
+                <div class="research-grid" id="researchGrid"></div>
+            </div>
+
+            <div id="design-section" class="section" style="display:none;">
+                <h2 class="section-title">✏️ Uçak Tasarım Stüdyosu</h2>
+                <div class="design-workspace">
+                    <div class="design-panel">
+                        <div class="panel-title">⚙️ Bileşen Seçimi</div>
+                        <div class="component-list" id="componentList"></div>
+                    </div>
+                    <div class="design-panel">
+                        <div class="panel-title">🛩️ Uçak Önizleme</div>
+                        <div class="aircraft-preview" id="aircraftPreview">
+                            <svg class="aircraft-svg" viewBox="0 0 400 300" id="aircraftSvg">
+                                <defs>
+                                    <linearGradient id="wingGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" style="stop-color:#00d4ff;stop-opacity:0.8" />
+                                        <stop offset="100%" style="stop-color:#0099cc;stop-opacity:0.6" />
+                                    </linearGradient>
+                                    <linearGradient id="fuselageGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                        <stop offset="0%" style="stop-color:#e0e0e0;stop-opacity:0.9" />
+                                        <stop offset="50%" style="stop-color:#ffffff;stop-opacity:0.95" />
+                                        <stop offset="100%" style="stop-color:#c0c0c0;stop-opacity:0.9" />
+                                    </linearGradient>
+                                    <linearGradient id="compositeGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                        <stop offset="0%" style="stop-color:#2a2a3e;stop-opacity:0.95" />
+                                        <stop offset="50%" style="stop-color:#3d3d5c;stop-opacity:0.9" />
+                                        <stop offset="100%" style="stop-color:#1a1a2e;stop-opacity:0.95" />
+                                    </linearGradient>
+                                </defs>
+                                
+                                <path id="svg-wings" class="aircraft-part" data-part="wings" d="M 50 150 L 200 130 L 350 150 L 200 170 Z" 
+                                      fill="url(#wingGradient)" stroke="#00d4ff" stroke-width="2"/>
+                                
+                                <ellipse id="svg-fuselage" class="aircraft-part" data-part="fuselage" cx="200" cy="150" rx="120" ry="25" 
+                                         fill="url(#fuselageGradient)" stroke="#666" stroke-width="2"/>
+                                
+                                <path id="svg-tail" class="aircraft-part" data-part="tail" d="M 80 150 L 40 100 L 60 100 L 100 150 Z" 
+                                      fill="#ff6b35" stroke="#ff6b35" stroke-width="2" opacity="0.8"/>
+                                
+                                <g id="svg-engines" class="aircraft-part" data-part="engines">
+                                    <rect x="120" y="165" width="40" height="15" rx="5" fill="#333" stroke="#00d4ff" stroke-width="2"/>
+                                    <rect x="240" y="165" width="40" height="15" rx="5" fill="#333" stroke="#00d4ff" stroke-width="2"/>
+                                </g>
+                                
+                                <path id="svg-cockpit" class="aircraft-part" data-part="cockpit" d="M 280 140 Q 300 135 310 150 Q 300 155 280 150" 
+                                      fill="#1a1a2e" stroke="#00d4ff" stroke-width="1"/>
+                            </svg>
+                            
+                            <div class="aircraft-stats" id="aircraftStats">
+                                <div class="aircraft-stat-box">
+                                    <div class="aircraft-stat-label">Hız</div>
+                                    <div class="aircraft-stat-value" id="stat-speed">0 km/s</div>
+                                </div>
+                                <div class="aircraft-stat-box">
+                                    <div class="aircraft-stat-label">Menzil</div>
+                                    <div class="aircraft-stat-value" id="stat-range">0 km</div>
+                                </div>
+                                <div class="aircraft-stat-box">
+                                    <div class="aircraft-stat-label">Taşıma</div>
+                                    <div class="aircraft-stat-value" id="stat-capacity">0 kg</div>
+                                </div>
+                                <div class="aircraft-stat-box">
+                                    <div class="aircraft-stat-label">Güvenlik</div>
+                                    <div class="aircraft-stat-value" id="stat-safety">0%</div>
+                                </div>
+                            </div>
+                            
+                            <button class="research-btn" style="margin-top:20px;" data-action="save-design">
+                                💾 Tasarımı Kaydet
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="production-section" class="section" style="display:none;">
+                <h2 class="section-title">🏭 Üretim Hatları</h2>
+                <div class="production-line" id="productionLines"></div>
+            </div>
+
+            <div id="testing-section" class="section" style="display:none;">
+                <h2 class="section-title">🧪 Test ve Sertifikasyon</h2>
+                <div class="research-grid" id="testGrid"></div>
+            </div>
+
+            <div id="market-section" class="section" style="display:none;">
+                <h2 class="section-title">💰 Siparişler ve Pazarlama</h2>
+                <div class="research-grid" id="marketGrid"></div>
+            </div>
+        </main>
+
+        <aside class="info-panel">
+            <div class="info-card">
+                <div class="info-card-title">📢 Bildirimler</div>
+                <div class="notification-list" id="notificationList">
+                    <div class="notification-item">
+                        🎉 AeroForge şirketiniz kuruldu!
+                        <div class="notification-time">Şimdi</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="info-card" id="activeOrdersCard" style="display:none;">
+                <div class="info-card-title">📦 Aktif Siparişler</div>
+                <div id="activeOrdersList"></div>
+            </div>
+
+            <div class="info-card">
+                <div class="info-card-title">📊 Piyasa Verileri</div>
+                <div id="marketData">
+                    <div class="market-item">
+                        <div>
+                            <div class="market-item-name">Yakıt Fiyatı</div>
+                            <div style="font-size:0.8rem;color:rgba(255,255,255,0.5)">Varil başına</div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div class="market-item-price" id="fuel-price">$78.50</div>
+                            <div class="market-item-change change-up" id="fuel-change">+2.3%</div>
+                        </div>
+                    </div>
+                    <div class="market-item">
+                        <div>
+                            <div class="market-item-name">Alüminyum</div>
+                            <div style="font-size:0.8rem;color:rgba(255,255,255,0.5)">Ton başına</div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div class="market-item-price" id="aluminum-price">$2,450</div>
+                            <div class="market-item-change change-down" id="aluminum-change">-1.2%</div>
+                        </div>
+                    </div>
+                    <div class="market-item">
+                        <div>
+                            <div class="market-item-name">Titan Alaşım</div>
+                            <div style="font-size:0.8rem;color:rgba(255,255,255,0.5)">Kg başına</div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div class="market-item-price" id="titan-price">$35.00</div>
+                            <div class="market-item-change change-up" id="titan-change">+5.1%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="info-card">
+                <div class="info-card-title">🏆 Başarımlar</div>
+                <div id="achievements" style="display:flex;flex-wrap:wrap;gap:10px;">
+                    <span style="padding:8px 15px;background:rgba(0,212,255,0.2);border-radius:20px;font-size:0.85rem;border:1px solid var(--primary);">
+                        🌱 Yeni Başlangıç
+                    </span>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <div class="flight-test" id="flightTest">
+        <div class="sky" id="sky">
+            <button class="close-test" data-action="close-flight-test">Testi Bitir ✕</button>
+            <div class="test-aircraft" id="testAircraft">✈️</div>
+            <div class="flight-data">
+                <div class="flight-stat">
+                    <span>İrtifa:</span>
+                    <span id="flight-altitude">10,000 ft</span>
+                </div>
+                <div class="flight-stat">
+                    <span>Hız:</span>
+                    <span id="flight-speed">450 km/s</span>
+                </div>
+                <div class="flight-stat">
+                    <span>İtme:</span>
+                    <span id="flight-thrust">85%</span>
+                </div>
+                <div class="flight-stat">
+                    <span>Yakıt:</span>
+                    <span id="flight-fuel">92%</span>
+                </div>
+                <div class="flight-stat">
+                    <span>Yapısal Bütünlük:</span>
+                    <span id="flight-integrity">100%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <button class="modal-close" data-action="close-modal">×</button>
+            <h3 class="modal-title" id="modalTitle">Başlık</h3>
+            <div id="modalBody">İçerik</div>
+        </div>
+    </div>
+
+    <!-- Core: utilities, timers, data templates -->
+    <script src="js/utils.js"></script>
+    <script src="js/timer.js"></script>
+    <script src="js/data.js"></script>
+
+    <!-- State: game state factory & dirty flags (depends on data) -->
+    <script src="js/state.js"></script>
+
+    <!-- UI: modals, notifications, stats, sections (depends on state) -->
+    <script src="js/ui.js"></script>
+
+    <!-- Systems: research, design, production, testing, market (depend on UI + state) -->
+    <script src="js/research.js"></script>
+    <script src="js/design.js"></script>
+    <script src="js/production.js"></script>
+    <script src="js/testing.js"></script>
+    <script src="js/market.js"></script>
+
+    <!-- Persistence: save/load (depends on all systems) -->
+    <script src="js/save.js"></script>
+
+    <!-- Engine: game loop & dirty render pass (orchestrates all systems) -->
+    <script src="js/loop.js"></script>
+
+    <!-- Entry point: event delegation, init, boot sequence (depends on everything) -->
+    <script src="js/main.js"></script>
+</body>
+</html>
